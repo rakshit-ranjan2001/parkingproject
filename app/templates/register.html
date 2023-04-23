@@ -1,0 +1,23 @@
+<html>
+    <body>
+        <h1>Register Here</h1><br><br>
+        {% for row in error %}
+        <h2>{{row}}</h2>
+        {% endfor %}
+        <form action="/register" method="post">
+            <label for="name">name</label>
+            <input type="text" id="'name" name="name"><br>
+            <label for="username">E-mail</label>
+            <input type="text" id="'username" name="username"><br>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"><br>
+            <input type="radio" id="admin" name="isadmin" value="1">
+            <label for="html">Admin</label><br>
+            <input type="radio" id="user" name="isadmin" value="0">
+            <label for="html">User</label><br>
+            <input type="submit" value="Register">
+        </form>
+        <a href="/login"><button>Login</button></a>
+        <a href="/"><button>Go back</button></a>
+    </body>
+</html>

@@ -1,0 +1,21 @@
+<html>
+    <body>
+        <h1>Revenue State-wise</h1><br>
+        <a href="/hmpg"><button>Go back</button></a>
+        <a href="/revcities"><button>Check revenue City-wise</button></a>
+        <table border="2" style="width: 100%;">
+            <tr>
+                <td><b>State</b></td>
+                <td><b>Revenue</b></td>
+                <td><b>Expand State</b></td>
+            </tr>
+            {% for row in rows %}
+            <tr>
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+                <td><a href="/revcity/{{row[0]}}"><button>Expand</button></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

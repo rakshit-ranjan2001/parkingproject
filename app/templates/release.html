@@ -1,0 +1,22 @@
+<html>
+    <body>
+        <h1>Release Booked Spots here</h1><br>
+        <a href="/hmpg"><button>Go back</button></a>
+        <table border="2" style="width: 100%;">
+            <tr>
+                <td><b>State</b></td>
+                <td><b>City</b></td>
+                <td><b>Booked on (yyyy-mm-dd-HH-MM)</b></td>
+                <td><b>Release</b></td>
+            </tr>
+            {% for row in rows %}
+            <tr>
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+                <td>{{row[2]}}</td>
+                <td><a href="/rel/{{row[3]}}/{{row[2]}}"><button>Release</button></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

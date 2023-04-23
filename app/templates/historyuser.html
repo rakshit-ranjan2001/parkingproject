@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <h1>User {{user}} History here</h1><br>
+        <a href="/hmpg"><button>Go back</button></a>
+        <a href="/history"><button>Go back to all users</button></a>
+        <table border="2" style="width: 100%;">
+            <tr>
+                <td><b>User-ID</b></td>
+                <td><b>State</b></td>
+                <td><b>City</b></td>
+                <td><b>Booked on (yyyy-mm-dd-HH-MM)</b></td>
+                <td><b>Released (yyyy-mm-dd-HH-MM)</b></td>
+            </tr>
+            {% for row in rows %}
+            <tr>
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+                <td>{{row[2]}}</td>
+                <td>{{row[3]}}</td>
+                <td>{{row[4]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

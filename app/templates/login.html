@@ -1,0 +1,17 @@
+<html>
+    <body>
+        <h1>Login Here</h1><br><br>
+        {% for row in error %}
+        <h2>{{row}}</h2>
+        {% endfor %}
+        <form action="/login" method="post">
+            <label for="username">E-mail</label>
+            <input type="text" id="'username" name="username"><br>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"><br>
+            <input type="submit" value="Login">
+        </form>
+        <a href="/register"><button>Register</button></a>
+        <a href="/"><button>Go back</button></a>
+    </body>
+</html>
