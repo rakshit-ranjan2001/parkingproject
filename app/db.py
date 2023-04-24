@@ -106,7 +106,8 @@ def adduser(name,email,password,isadmin):
 def add_to_wallet(u,amount):
     with session() as ssn:
         u = ssn.query(Users).filter(Users.userid == u.get("userid")).first()
-        u.wallet += amount
+        print(type(u.wallet), type(amount))
+        u.wallet += int(amount)
         ssn.commit()
 
 # def add_to_wallet(u:dict, amount:int):
@@ -130,7 +131,7 @@ def get_booking_list():
 def get_booking_list_by_state(state:str):
     with session() as ssn:
         spots = ssn.query(States).filter(States.state.like(f"%{state}%")).all()
-        return [[row.state, row.city, row.avaialble, row.code] for row in spots]
+        return [[row.state, row.city, row.available, row.code] for row in spots]
 
 # def get_booking_list_by_state(state:str):
 #     cur.execute(f"select state,city,available,code from states where state like '%{state}%'")
@@ -156,6 +157,8 @@ def get_spot(code:str):
 def book_spot(u,s):
     with session() as ssn:
         booked = datetime.datetime.now().strftime(fmt)
+        state=ssn.query(States).filter(States.code == s['code']).first()
+        state.available-=1
         b=Booked(
             userid=u['userid'],
             state=s['state'],
@@ -185,11 +188,12 @@ def get_release_list(u):
 def release_spot(u,code,booked):
     with session() as ssn:
         released = datetime.datetime.now().strftime(fmt)
-        ssn.query(Booked).filter(
+        usr=ssn.query(Booked).filter(
             Booked.userid==u['userid'],
             Booked.code==code,
             Booked.booked==booked
-        ).first().delete()
+        ).first()
+        ssn.delete(usr)
         ssn.add(History(
             userid=u['userid'],
             state=dic[code]["state"],
@@ -199,11 +203,11 @@ def release_spot(u,code,booked):
         ))
         delta=datetime.datetime.strptime(released, fmt) - datetime.datetime.strptime(booked, fmt)
         hrs=math.ceil((delta.total_seconds())/3600)
-        s=ssn.query(States).filter(States.code == code)
+        s=ssn.query(States).filter(States.code == code).first()
         s.hours += hrs
-        s.avaialble += 1
-        user=ssn.query(Users).filter(Users.userid == u['userid'])
-        user -= hrs*50
+        s.available += 1
+        user=ssn.query(Users).filter(Users.userid == u['userid']).first()
+        user.wallet -= hrs*50
         ssn.commit()
 
 # def release_spot(u,code,booked):

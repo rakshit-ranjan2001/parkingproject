@@ -28,9 +28,33 @@ dic={'AP-NL': {'state': 'Andhra Pradesh', 'city': 'Nellore'}, 'AP-TP': {'state':
 async def welcome(request:Request):
     return templates.TemplateResponse('index.html',{"request":request, "avail":db.avail()})
 
+# @app.get("/login",response_class=HTMLResponse)
+# async def login(request:Request):
+#     return templates.TemplateResponse("login.html", {"request":request, "error":[]})
+
 @app.get("/login",response_class=HTMLResponse)
 async def login(request:Request):
-    return templates.TemplateResponse("login.html", {"request":request, "error":[]})
+    token=request.cookies.get("authorization")
+    u = ath.is_ath(token)
+    print(u)
+    print(token)
+    if (u == ath.e) or not(token==u['token']):
+        return templates.TemplateResponse("login.html", {"request":request, "error":[]})
+    else:
+        tm = datetime.datetime.now() + datetime.timedelta(minutes=10)
+        exp= datetime.datetime.strptime(ath.dec(token)["expiry"], fmt)
+        avail = db.avail()
+        if tm>exp:
+            tkn = ath.crt(u['email'])
+            print(tkn)
+            db.updtoken(u['email'], tkn)
+            response.set_cookie(key="authorization", value=tkn)
+        if u.get("isadmin")==1:
+            return templates.TemplateResponse("hmpgadm.html", {"request":request, "avail":avail})
+        else:
+            return templates.TemplateResponse("hmpg.html", {"request":request, "avail":avail, "wallet":u.get("wallet")})
+    
+    
 
 @app.post("/login")
 async def login(request: Request,response: Response, username:str=Form(), password:str=Form()):
@@ -82,11 +106,14 @@ async def hmpg(request: Request, response: Response):
     if (u == ath.e) or not(token==u['token']):
         return RedirectResponse("/login")
     else:
-        tkn = ath.crt(u['email'])
-        print(tkn)
-        db.updtoken(u['email'], tkn)
+        tm = datetime.datetime.now() + datetime.timedelta(minutes=10)
+        exp= datetime.datetime.strptime(ath.dec(token)["expiry"], fmt)
         avail = db.avail()
-        response.set_cookie(key="authorization", value=tkn)
+        if tm>exp:
+            tkn = ath.crt(u['email'])
+            print(tkn)
+            db.updtoken(u['email'], tkn)
+            response.set_cookie(key="authorization", value=tkn)
         if u.get("isadmin")==1:
             return templates.TemplateResponse("hmpgadm.html", {"request":request, "avail":avail})
         else:
@@ -101,11 +128,14 @@ async def hmpg(request: Request, response: Response):
     if (u == ath.e) or not(token==u['token']):
         return RedirectResponse("/login")
     else:
-        tkn = ath.crt(u['email'])
-        print(tkn)
-        db.updtoken(u['email'], tkn)
+        tm = datetime.datetime.now() + datetime.timedelta(minutes=10)
+        exp= datetime.datetime.strptime(ath.dec(token)["expiry"], fmt)
         avail = db.avail()
-        response.set_cookie(key="authorization", value=tkn)
+        if tm>exp:
+            tkn = ath.crt(u['email'])
+            print(tkn)
+            db.updtoken(u['email'], tkn)
+            response.set_cookie(key="authorization", value=tkn)
         if u.get("isadmin")==1:
             return templates.TemplateResponse("hmpgadm.html", {"request":request, "avail":avail})
         else:
