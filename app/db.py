@@ -83,7 +83,7 @@ def updtoken(email:str, token:str):
 def adduser(name,email,password,isadmin):
     pswd=password.encode("utf-8")
     pswd=bcrypt.hashpw(pswd, bcrypt.gensalt())
-    pswd=pswd.decode("utf-8")
+    # pswd=pswd.decode("utf-8")
     with session() as ssn:
         u=Users(
             name=name,
