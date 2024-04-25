@@ -36,9 +36,7 @@ def rd(token):
     return dic["email"]
 
 def is_ath(token:str) -> dict:
-    if token is None:
-        return e
-    elif token == 'none':
+    if token is None or token == 'none':
         return e
     tm = datetime.datetime.strptime(dec(token)["expiry"], fmt)
     if datetime.datetime.now()<=tm:
