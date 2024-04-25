@@ -35,10 +35,6 @@ def avail():
         rs=ssn.query(func.sum(States.available)).first()
         return rs[0]
 
-# def avail():
-#     cur.execute("select sum(available) from states")
-#     return int(cur.fetchone()[0])
-
 def getuser(email:str):
     with session() as ssn:
         u = ssn.query(Users).filter(Users.email==email).first()
@@ -46,41 +42,12 @@ def getuser(email:str):
             return {}
         else:
             return vars(u)
-            # return {
-            #     "userid":u.userid,
-            #     "name":u.name,
-            #     "email":u.email,
-            #     "pswd":u.pswd,
-            #     "isadmin":u.isadmin,
-            #     "wallet":u.wallet,
-            #     "token":u.token
-            # }
-
-# def getuser(email:str) -> dict:
-#     cur.execute(f"select * from users where email = {email}")
-#     t=list(cur.fetchone())
-#     if t==[]:
-#         return {}
-#     else:
-#         return {
-#             "userid":t[0],
-#             "name":t[1],
-#             "email":t[2],
-#             "pass":t[3],
-#             "isadmin":t[4],
-#             "wallet":t[5],
-#             "token":t[6]
-#         }
-
+            
 def updtoken(email:str, token:str):
     with session() as ssn:
         u = ssn.query(Users).filter(Users.email==email).first()
         u.token=token
         ssn.commit()
-
-# def updtoken(email:str, token:str):
-#     cur.execute(f"update users set token = '{token}' where email='{email}'")
-#     mydb.commit()
 
 def adduser(name,email,password,isadmin):
     pswd=password.encode("utf-8")
@@ -98,13 +65,6 @@ def adduser(name,email,password,isadmin):
         ssn.add(u)
         ssn.commit()
 
-# def adduser(name,email,password,isadmin):
-#     pswd=password.encode("utf-8")
-#     pswd=bcrypt.hashpw(pswd, bcrypt.gensalt())
-#     pswd=pswd.decode("utf-8")
-#     cur.execute(f"Insert into users (name, email, pass, isadmin, wallet, token) values ('{name}','{email}','{pswd}',{int(isadmin)},0,'none')")
-#     mydb.commit()
-
 def add_to_wallet(u,amount):
     with session() as ssn:
         u = ssn.query(Users).filter(Users.userid == u.get("userid")).first()
@@ -112,49 +72,20 @@ def add_to_wallet(u,amount):
         u.wallet += int(amount)
         ssn.commit()
 
-# def add_to_wallet(u:dict, amount:int):
-#     cur.execute(f"update users set wallet=wallet+{amount} where email='{u.get('email')}'")
-#     mydb.commit()
-
-# def clear_token(u:dict):
-#     cur.execute(f"update users set token='none' where email = '{u.get('email')}'")
-#     mydb.commit()
-
 def get_booking_list():
     with session() as ssn:
         spots=ssn.query(States).all()
         return [[row.state, row.city, row.available, row.code] for row in spots]
-
-# def get_booking_list():
-#     cur.execute(f"select state,city,available,code from states")
-#     rows=[i for i in cur.fetchall()]
-#     return rows
 
 def get_booking_list_by_state(state:str):
     with session() as ssn:
         spots = ssn.query(States).filter(States.state.like(f"%{state}%")).all()
         return [[row.state, row.city, row.available, row.code] for row in spots]
 
-# def get_booking_list_by_state(state:str):
-#     cur.execute(f"select state,city,available,code from states where state like '%{state}%'")
-#     rows=[i for i in cur.fetchall()]
-#     return rows
-
 def get_spot(code:str):
     with session() as ssn:
         spot=ssn.query(States).filter(States.code==code).first()
         return vars(spot)
-
-# def get_spot(code:str):
-#     cur.execute(f"select state,city,available,code from states where code='{code}'")
-#     c=cur.fetchone()
-#     d={
-#         "state":c[0],
-#         "city":c[1],
-#         "avaialble":c[2],
-#         "code":c[3]
-#     }
-#     return d
 
 def book_spot(u,s):
     with session() as ssn:
@@ -171,21 +102,10 @@ def book_spot(u,s):
         ssn.add(b)
         ssn.commit()
 
-# def book_spot(u:dict,s:dict):
-#     booked = datetime.datetime.now().strftime(fmt)
-#     cur.execute(f"insert into booked values ({u['userid']},'{s['state']}','{s['city']}','{booked}','{s['code']}')")
-#     cur.execute(f"update states set available = available-1 where code = '{s['code']}'")
-#     mydb.commit()
-
 def get_release_list(u):
     with session() as ssn:
         lis=ssn.query(Booked).filter(Booked.userid==u['userid'])
         return [[r.state, r.city, r.booked, r.code] for r in lis]
-
-# def get_release_list(u:dict):
-#     cur.execute(f"select state, city, booked, code from booked where userid='{u['userid']}'")
-#     c=[i for i in cur.fetchall()]
-#     return c
 
 def release_spot(u,code,booked):
     with session() as ssn:
@@ -212,22 +132,6 @@ def release_spot(u,code,booked):
         user.wallet -= hrs*50
         ssn.commit()
 
-# def release_spot(u,code,booked):
-#     userid=u.get("userid")
-#     cur.execute(f"select state,city from booked where userid={userid} and code = '{code}' and booked = '{booked}'")
-#     t=cur.fetchone()
-#     state=t[0]
-#     city=t[1]
-#     released = datetime.datetime.now().strftime(fmt)
-#     cur.execute(f"delete from booked where userid={userid} and code = '{code}' and booked = '{booked}' limit 1")
-#     cur.execute(f"insert into history values ({userid},'{state}','{city}','{booked}','{released}')")
-#     cur.execute(f"update states set available = available + 1 where code = '{code}'")
-#     delta=datetime.datetime.strptime(released, fmt) - datetime.datetime.strptime(booked, fmt)
-#     hrs=math.ceil((delta.total_seconds())/3600)
-#     cur.execute(f"update users set wallet = wallet - {hrs * 50} where userid = {userid}")
-#     cur.execute(f"update states set hours = hours+{hrs} where code = '{code}'")
-#     mydb.commit()
-
 def get_history(u:dict):
     with session() as ssn:
         if u['isadmin']==1:
@@ -237,62 +141,27 @@ def get_history(u:dict):
             h=ssn.query(History).filter(History.userid == u['userid']).all()
             return [[r.state,r.city,r.booked,r.released] for r in h]
 
-# def get_history(u:dict):
-#     if u.get("isadmin")==1:
-#         cur.execute(f"select * from history")
-#         c=[i for i in cur.fetchall()]
-#         return c
-#     else:
-#         cur.execute(f"select state, city, booked, released from history where userid='{u.get('userid')}'")
-#         c=[i for i in cur.fetchall()]
-#         return c
-
 def get_user_history(userid:int):
     with session() as ssn:
         h=ssn.query(History).filter(History.userid == userid).all()
         return [[r.userid,r.state,r.city,r.booked,r.released] for r in h]
-
-# def get_user_history(userid:int):
-#     cur.execute(f"select * from history where userid={userid}")
-#     c=[i for i in cur.fetchall()]
-#     return c
 
 def get_booking_history():
     with session() as ssn:
         h=ssn.query(Booked).all()
         return [[r.userid, r.state, r.city, r.booked] for r in h]
 
-# def get_booking_history():
-#     cur.execute(f"select * from booked")
-#     c=[i for i in cur.fetchall()]
-#     return c
-
 def get_revenue_statewise():
     with session() as ssn:
         h=ssn.query(States.state, func.sum(States.hours) * 50).group_by(States.state).all()
         return [list(i) for i in h]
-
-# def get_revenue_statewise():
-#     cur.execute(f"select state,sum(hours)*50 from states group by state")
-#     c=[i for i in cur.fetchall()]
-#     return c
 
 def get_revenue_citywise():
     with session() as ssn:
         h=ssn.query(States.state, States.city, States.hours * 50).all()
         return [list(i) for i in h]
 
-# def get_revenue_citywise():
-#     cur.execute(f"select state,city,hours*50 from states")
-#     c=[i for i in cur.fetchall()]
-#     return c
-
 def get_revenue_for_state(state:str):
     with session() as ssn:
         h=ssn.query(States.city, States.hours * 50).filter(States.state == state).all()
         return [list(i) for i in h]
-
-# def get_revenue_for_state(state:str):
-#     cur.execute(f"select city,hours*50 from states where state = '{state}'")
-#     c=[i for i in cur.fetchall()]
-#     return c
