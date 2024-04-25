@@ -28,10 +28,6 @@ fmt="%Y-%m-%d-%H-%M"
 async def welcome(request:Request):
     return templates.TemplateResponse('index.html',{"request":request, "avail":db.avail()})
 
-# @app.get("/login",response_class=HTMLResponse)
-# async def login(request:Request):
-#     return templates.TemplateResponse("login.html", {"request":request, "error":[]})
-
 @app.get("/login",response_class=HTMLResponse)
 async def login(request:Request):
     token=request.cookies.get("authorization")
